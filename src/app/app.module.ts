@@ -22,7 +22,6 @@ import { ElasticTextarea } from "../components/elasticTextarea";
 import { ChatPage } from "../pages/chatPage/chatPage";
 import { CommentService } from "../services/comment.service";
 import { AgmCoreModule } from 'angular2-google-maps/core';
-import { DirectionsMapDirective } from "../pages/page2/DirectionsMapDirective";
 import { MapComponent } from "../pages/map/map";
 
 const cloudSettings: CloudSettings = {

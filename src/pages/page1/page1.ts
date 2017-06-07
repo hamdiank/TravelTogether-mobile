@@ -205,7 +205,7 @@ export class Page1 {
 <ion-header>
   <ion-toolbar color="customGreen">
     <ion-title>
-      Details
+      {{annonce.villeDepart}} , {{annonce.paysDepart}} -> {{annonce.villeArrivee}} , {{annonce.paysArrivee}}
     </ion-title>
     <ion-buttons start>
       <button ion-button (click)="dismiss()">
@@ -216,6 +216,7 @@ export class Page1 {
   </ion-toolbar>
 </ion-header>
 <ion-content class="mapHome">
+  <div  #map id="map"></div>
   <ion-list>
       <ion-item>
         <ion-avatar item-start>
@@ -232,9 +233,6 @@ export class Page1 {
       </button>
       </ion-item>
       
-  
- 
-  
          <ion-item-group>
         <ion-item-divider color="light">Information</ion-item-divider>
         <ion-item>
@@ -277,7 +275,7 @@ export class Page1 {
         </ion-item>
       </ion-item-group>
   </ion-list>
-  <div  #map id="map"></div>
+
 </ion-content>
 
 `
@@ -339,7 +337,6 @@ export class ModalContentPage {
     this.viewCtrl.dismiss();
   }
   reservation() {
-
     this.navCtrl.push(MapComponent)
     //   let modal = this.modalCtrl.create(ModalReservation, { id: this.id });
     //    modal.present();
