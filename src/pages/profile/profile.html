@@ -6,7 +6,7 @@
     <ion-title>Profile</ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content padding class="transparent-header">
+<ion-content padding class="transparent-header grid-basic-page">
   <ion-header>
     <ion-navbar>
     </ion-navbar>
@@ -19,16 +19,29 @@
       <h3 id="profile-name">{{user.prenom}} {{user.nom}}</h3>
       <p>{{user.profession}} </p>
       <p class="profile-description">{{user.description}}</p>
-      <ion-row>
-        <ion-col>
-          <button *ngIf="id != user.idUtilisateur" center ion-fab ion-mini small color="purple" (click)="message()" round> 
+
+
+      <ion-row justify-content-around>
+        <ion-col col-3>
+         
+          <div> 
+            <button *ngIf="id != user.idUtilisateur" center ion-fab ion-mini small color="purple" (click)="message()" round> 
         <ion-icon name="chatbubbles"></ion-icon></button>
+        </div>
         </ion-col>
-        <ion-col>
-          <button center ion-fab ion-mini small color="purple" (click)="showAvis()" round> 
+        <ion-col col-3>
+         
+          <div> 
+            <button center ion-fab ion-mini small color="purple" (click)="showAvis()" round> 
         <ion-icon name="create"></ion-icon></button>
+        </div>
         </ion-col>
       </ion-row>
+
+
+
+
+
     </div>
     <hr/>
     <div id="posts">

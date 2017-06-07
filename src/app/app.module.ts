@@ -5,7 +5,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
 import { Storage } from "@ionic/storage";
 import { MyApp } from './app.component';
-import { Page1, ModalContentPage, ModalReservation, ModalComment } from '../pages/page1/page1';
+import { Page1, ModalContentPage, ModalReservation, ModalComment, ModalAjoutCovoi } from '../pages/page1/page1';
 import { Page2 } from '../pages/page2/page2';
 import { UserAuth } from "../services/user-auth";
 import { CustomValidators } from "../services/custom-validators";
@@ -40,7 +40,7 @@ const cloudSettings: CloudSettings = {
     SignupPage,
     ForgotPasswordPage,
     ConfirmPasswordResetPage,
-    ErrorMessages,ModalContentPage,ChatBubble,ElasticTextarea,ChatPage,ModalContentAvis,ModalReservation,ModalComment,MapComponent
+    ErrorMessages,ModalContentPage,ChatBubble,ElasticTextarea,ChatPage,ModalContentAvis,ModalReservation,ModalComment,MapComponent,ModalAjoutCovoi
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -61,7 +61,7 @@ const cloudSettings: CloudSettings = {
     LoginPage,
     SignupPage,
     ForgotPasswordPage,
-    ConfirmPasswordResetPage,ModalContentPage,ModalContentAvis,ModalReservation,ChatBubble,ElasticTextarea,ChatPage,ModalComment,MapComponent
+    ConfirmPasswordResetPage,ModalContentPage,ModalContentAvis,ModalReservation,ChatBubble,ElasticTextarea,ChatPage,ModalComment,MapComponent,ModalAjoutCovoi
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
   Storage,

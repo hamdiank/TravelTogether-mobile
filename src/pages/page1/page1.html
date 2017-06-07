@@ -24,8 +24,8 @@
   <div [ngSwitch]="type">
 
     <ion-list *ngSwitchCase="'vehicule'">
-<button ion-button block  color=customGreen><ion-icon name="add"></ion-icon></button>
-<button ion-button (click)="search()" block color=customGreen><ion-icon name="search"></ion-icon></button>
+<button ion-button block (click)="ajoutCovoi()" color=customGreen><ion-icon name="add"></ion-icon></button>
+<button ion-button block (click)="searchCovoi()"  color=customGreen><ion-icon name="search"></ion-icon></button>
       <!--  
       <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>

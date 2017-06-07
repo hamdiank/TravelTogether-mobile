@@ -53,11 +53,38 @@ export class Page1 {
       console.log(result.content);
     })
   }
+  ajoutCovoi() {
 
-  search() {
-
-    let modal = this.modalCtrl.create(ModalContentPage);
+    let modal = this.modalCtrl.create(ModalAjoutCovoi);
     modal.present();
+
+
+  }
+  searchCovoi() {
+
+    let alert = this.alertCtrl.create({
+      title: 'vous êtes sur ?',
+      message: 'chercher une annonce covoiturage',
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'chercher',
+          handler: () => {
+
+
+          }
+        }
+      ]
+
+
+    });
+    alert.present();
+
   }
   presentToast(msg: string) {
     let toast = this.toastCtrl.create({
@@ -300,11 +327,11 @@ export class ModalContentPage {
     this.end = this.annonce.villeArrivee;
     this.id = this.params.get('id');
     console.log("id    " + this.id);
-    
+
   }
 
 
- ionViewDidLoad() {
+  ionViewDidLoad() {
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer;
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -314,7 +341,7 @@ export class ModalContentPage {
     this.platform.ready().then(() => {
       directionsDisplay.setMap(map);
     });
-    console.log('eeeee'+map);
+    console.log('eeeee' + map);
     directionsService.route({
       origin: this.start,
       destination: this.end,
@@ -330,7 +357,7 @@ export class ModalContentPage {
   }
 
 
-getProfile(id) {
+  getProfile(id) {
 
     this.navCtrl.push(ProfilePage, { data: id });
   }
@@ -535,6 +562,197 @@ export class ModalComment {
     });
 
     toast.present();
+  }
+
+  dismiss() {
+    this.viewCtrl.dismiss();
+  }
+
+
+}
+
+
+@Component({
+  template: `
+<ion-header>
+  <ion-toolbar color="customGreen">
+    <ion-title>
+      Ajout Annonce Covoiturage
+    </ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+        <span ion-text color="primary" showWhen="ios">Annuler</span>
+        <ion-icon name="md-close" showWhen="android, windows"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+
+<ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="pin" color="secondary" item-left large></ion-icon>
+          <span item-left ><strong>Depart</strong></span></ion-item-divider>
+        <ion-item>
+         <ion-label>
+          <span item-left color="primary">Pays</span>
+         </ion-label>
+    <ion-select [(ngModel)]="gaming">
+      <ion-option value="nes">NES</ion-option>
+      <ion-option value="n64">Nintendo64</ion-option>
+      <ion-option value="ps">PlayStation</ion-option>
+      <ion-option value="genesis">Sega Genesis</ion-option>
+      <ion-option value="saturn">Sega Saturn</ion-option>
+      <ion-option value="snes">SNES</ion-option>
+    </ion-select>
+        </ion-item>
+     <ion-item>
+         <ion-label>
+         
+          <span item-left color="primary">Ville</span>
+         </ion-label>
+    <ion-select [(ngModel)]="a">
+      <ion-option value="nes">NES</ion-option>
+      <ion-option value="n64">Nintendo64</ion-option>
+      <ion-option value="ps">PlayStation</ion-option>
+      <ion-option value="genesis">Sega Genesis</ion-option>
+      <ion-option value="saturn">Sega Saturn</ion-option>
+      <ion-option value="snes">SNES</ion-option>
+    </ion-select>
+        </ion-item>
+      </ion-item-group>
+
+
+    <ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="pin" color="danger" item-left large></ion-icon>
+          <span item-left ><strong>Arrivée</strong></span></ion-item-divider>
+        <ion-item>
+         <ion-label>
+          <span item-left color="primary">Pays</span>
+         </ion-label>
+    <ion-select [(ngModel)]="gaming">
+      <ion-option value="nes">NES</ion-option>
+      <ion-option value="n64">Nintendo64</ion-option>
+      <ion-option value="ps">PlayStation</ion-option>
+      <ion-option value="genesis">Sega Genesis</ion-option>
+      <ion-option value="saturn">Sega Saturn</ion-option>
+      <ion-option value="snes">SNES</ion-option>
+    </ion-select>
+        </ion-item>
+     <ion-item>
+         <ion-label>
+         
+          <span item-left color="primary">Ville</span>
+         </ion-label>
+    <ion-select [(ngModel)]="a">
+      <ion-option value="nes">NES</ion-option>
+      <ion-option value="n64">Nintendo64</ion-option>
+      <ion-option value="ps">PlayStation</ion-option>
+      <ion-option value="genesis">Sega Genesis</ion-option>
+      <ion-option value="saturn">Sega Saturn</ion-option>
+      <ion-option value="snes">SNES</ion-option>
+    </ion-select>
+        </ion-item>
+      </ion-item-group>
+
+
+      <ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="calendar" color="primary" item-left large></ion-icon>
+          <span item-left ><strong>Date</strong></span></ion-item-divider>
+
+      <ion-item>
+         <ion-label>
+          <span item-left color="primary">Date</span>
+         </ion-label>
+            <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="event.month"></ion-datetime>     
+       </ion-item>
+    </ion-item-group>
+
+      <ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="time" color="primary" item-left large></ion-icon>
+          <span item-left ><strong>Heure</strong></span></ion-item-divider>
+
+        <ion-item>
+         <ion-label>
+          <span item-left color="primary">Heure</span>
+         </ion-label>
+            <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="event.time"></ion-datetime>    
+       </ion-item>
+        </ion-item-group>
+
+
+         <ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="cash" color="primary" item-left large></ion-icon>
+          <span item-left ><strong>Cotisation</strong></span></ion-item-divider>
+
+      <ion-item>
+         <ion-label>
+          <span item-left color="primary">Cotisation</span>
+         </ion-label>
+           <ion-select [(ngModel)]="cotisation">
+      <ion-option value="1">1</ion-option>
+      <ion-option value="2">2</ion-option>
+      <ion-option value="3">3</ion-option>
+      <ion-option value="4">4</ion-option>
+     
+    </ion-select>    
+    <ion-select [(ngModel)]="currency">
+      <ion-option value="$">$</ion-option>
+      <ion-option value="DT">DT</ion-option>
+      <ion-option value="£">£</ion-option>
+     
+    </ion-select>   
+       </ion-item>
+
+</ion-item-group>
+
+ <ion-item-group>
+        <ion-item-divider color="light"><ion-icon name="people" color="primary" item-left large></ion-icon>
+          <span item-left ><strong>Nb places</strong></span></ion-item-divider>
+
+        <ion-item>
+         <ion-label>
+          <span item-left color="primary">Places</span>
+         </ion-label>
+           <ion-select [(ngModel)]="place">
+      <ion-option value="1">1</ion-option>
+      <ion-option value="2">2</ion-option>
+      <ion-option value="3">3</ion-option>
+      <ion-option value="4">4</ion-option>
+      <ion-option value="5">5</ion-option>
+      <ion-option value="6">6</ion-option>
+      <ion-option value="7">7</ion-option>
+       <ion-option value="8">8</ion-option>
+    </ion-select>   
+        
+       </ion-item>
+        </ion-item-group>
+    <ion-item-divider color="light"></ion-item-divider>
+    <br>
+        <button ion-button round color="customGreen" class="center">Ajouter</button>
+        <br>
+        
+  </ion-content>
+
+`
+
+
+
+})
+
+export class ModalAjoutCovoi {
+  id: any;
+   public event = {
+    month: '1990-02-19',
+    time: '07:43',
+    
+  };
+  constructor(
+    public platform: Platform,
+    public params: NavParams,
+    public viewCtrl: ViewController, public annonceCovoiService: AnnonceCovoiService
+  ) {
+
   }
 
   dismiss() {
