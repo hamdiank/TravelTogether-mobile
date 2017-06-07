@@ -40,12 +40,13 @@ export class MyApp {
     this.storage.ready().then(() => {
       this.storage.get("token").then((data) => {
         console.log("dataa   "+data);
+        this.data=data;
         if (data === null) {
            console.log("dataa   "+data);
           this.rootPage = LoginPage;
         }
         else {
-          this.data=data;
+          
           this.rootPage = Page1;
         }
       });
@@ -65,12 +66,17 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
   openProfile(page) {
-    console.log(this.data);
+       this.storage.ready().then(() => {
+      this.storage.get("token").then((data) => {
+    console.log(data);
        let jwtHelper: JwtHelper = new JwtHelper();
-       console.log(this.data);
-       let a=jwtHelper.decodeToken(this.data).userId;
+       console.log(data);
+       let a=jwtHelper.decodeToken(data).userId;
        console.log("aaa "+a);
-    this.nav.push(ProfilePage, { data: a });
+       this.nav.push(ProfilePage, { data: a });
+      });
+       })
+    
   }
   logout(): void {
     let loader = this.loading.create({
