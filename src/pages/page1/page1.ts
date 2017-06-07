@@ -8,7 +8,7 @@ import { JwtHelper } from "angular2-jwt/angular2-jwt";
 import { UserService } from "../../services/user.service";
 import { CommentService } from "../../services/comment.service";
 import { MapComponent } from "../map/map";
-
+declare var google;
 
 @Component({
   selector: 'page-page1',
@@ -215,7 +215,7 @@ export class Page1 {
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="mapHome">
   <ion-list>
       <ion-item>
         <ion-avatar item-start>
@@ -231,10 +231,10 @@ export class Page1 {
         <ion-icon name="bookmark"> Reservation</ion-icon>
       </button>
       </ion-item>
-      <ion-item>
-
-<map-page [start]="start" [end]="end"></map-page>
-      </ion-item>
+      
+  
+ 
+  
          <ion-item-group>
         <ion-item-divider color="light">Information</ion-item-divider>
         <ion-item>
@@ -277,6 +277,7 @@ export class Page1 {
         </ion-item>
       </ion-item-group>
   </ion-list>
+  <div  #map id="map"></div>
 </ion-content>
 
 `
@@ -285,8 +286,8 @@ export class ModalContentPage {
 
   id: any;
   annonce = new AnnonceCovoi();
-  start: any = "";
-  end: any = "";
+  start: any = "rr";
+  end: any = "rr";
   constructor(public navCtrl: NavController,
     public platform: Platform,
     public params: NavParams,
@@ -297,10 +298,42 @@ export class ModalContentPage {
 
     this.annonce = this.params.get('annonce');
     this.start = this.annonce.villeDepart;
+    console.log("dddddddd " + this.start);
     this.end = this.annonce.villeArrivee;
     this.id = this.params.get('id');
     console.log("id    " + this.id);
+    
   }
+
+
+ ionViewDidLoad() {
+    var directionsService = new google.maps.DirectionsService;
+    var directionsDisplay = new google.maps.DirectionsRenderer;
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 7,
+      center: { lat: 41.85, lng: -87.65 }
+    });
+    this.platform.ready().then(() => {
+      directionsDisplay.setMap(map);
+    });
+    console.log('eeeee'+map);
+    directionsService.route({
+      origin: this.start,
+      destination: this.end,
+      travelMode: 'DRIVING'
+    }, function (response, status) {
+      if (status === 'OK') {
+
+        directionsDisplay.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+
+
+
 
   dismiss() {
     this.viewCtrl.dismiss();
