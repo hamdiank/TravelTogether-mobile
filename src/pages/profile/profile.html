@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-navbar color="customGreen">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Profile</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding class="transparent-header">
+  <ion-header>
+    <ion-navbar>
+    </ion-navbar>
+  </ion-header>
+  <div id="profile-bg" [ngStyle]="{'background-color': '#1ab394'}"></div>
+  <div id="content">
+    <div id="profile-info" padding>
+
+      <img id="profile-image" [src]="'data:image/png;base64,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'">
+      <h3 id="profile-name">{{user.prenom}} {{user.nom}}</h3>
+      <p>{{user.profession}} </p>
+      <p class="profile-description">{{user.description}}</p>
+      <ion-row>
+        <ion-col>
+          <button *ngIf="id != user.idUtilisateur" center ion-fab ion-mini small color="purple" (click)="message()" round> 
+        <ion-icon name="chatbubbles"></ion-icon></button>
+        </ion-col>
+        <ion-col>
+          <button center ion-fab ion-mini small color="purple" (click)="showAvis()" round> 
+        <ion-icon name="create"></ion-icon></button>
+        </ion-col>
+      </ion-row>
+    </div>
+    <hr/>
+    <div id="posts">
+      <ion-item-group>
+        <ion-item-divider color="light">Information</ion-item-divider>
+        <ion-item>
+          <span item-left color="primary">Nom</span>
+          <span item-right>{{user.nom}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-left color="primary">Prenom</span>
+          <span item-right>{{user.prenom}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-left color="primary">Date Naissance</span>
+          <span item-right>{{user.dateNaissance}}</span>
+        </ion-item>
+      </ion-item-group>
+      <ion-item-group>
+        <ion-item-divider color="light">Contact</ion-item-divider>
+        <ion-item>
+          <ion-icon item-left color="primary" name="call"></ion-icon>
+          <span item-right>{{user.numTelephone}}</span>
+        </ion-item>
+        <ion-item>
+          <ion-icon item-left color="primary" name="mail"></ion-icon>
+          <span item-right>{{user.email}}</span>
+        </ion-item>
+      </ion-item-group>
+      <ion-item-group>
+        <ion-item-divider color="light">Preferences</ion-item-divider>
+        <ion-item>
+
+          <ion-icon item-left name="no-smoking" large></ion-icon>
+          <ion-icon item-left name="musical-notes" large></ion-icon>
+
+        </ion-item>
+
+      </ion-item-group>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar color="customGreen">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Mes annonces</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <button  ion-item color="customDanger" *ngFor="let an of annonce" (click)="details(an.id)" >
+      <ion-icon name="car" item-left></ion-icon>
+      
+    <strong> {{an.villeDepart}} , {{an.paysDepart}}&nbsp; <ion-icon name="arrow-round-forward" color=""></ion-icon>&nbsp; {{an.villeArrivee}} , {{an.paysArrivee}}</strong>
+      <div class="item-note" item-right>
+        {{an.dateDepart}}
+      </div>
+    </button>
+  </ion-list>
+  <div *ngIf="selectedItem" padding>
+    details <b></b>
+  </div>
+</ion-content>
