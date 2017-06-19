@@ -9,7 +9,8 @@
 
 <ion-content>
   <ion-list>
-    <button  ion-item color="customDanger" *ngFor="let an of annonce" (click)="details(an.id)" >
+    <ion-item-sliding *ngFor="let an of annonce">
+      <button ion-item color="customDanger" (click)="details(an.id)">
       <ion-icon name="car" item-left></ion-icon>
       
     <strong> {{an.villeDepart}} , {{an.paysDepart}}&nbsp; <ion-icon name="arrow-round-forward" color=""></ion-icon>&nbsp; {{an.villeArrivee}} , {{an.paysArrivee}}</strong>
@@ -17,8 +18,14 @@
         {{an.dateDepart}}
       </div>
     </button>
+      <ion-item-options side="right">
+
+        <button ion-button color="secondary" (click)="reservation(an.id)">
+        <ion-icon name="chatbubbles"></ion-icon>
+        Reservations
+      </button>
+
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
-  <div *ngIf="selectedItem" padding>
-    details <b></b>
-  </div>
 </ion-content>

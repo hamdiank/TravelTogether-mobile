@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import { NavController, NavParams, ModalController } from 'ionic-angular';
 import { AnnonceCovoiService } from "../../services/annonceCovoi.service";
-import { ModalContentPage } from "../page1/page1";
+import { ModalContentPage, ModalReservation } from "../page1/page1";
 import { Storage } from '@ionic/storage';
 import { JwtHelper } from "angular2-jwt/angular2-jwt";
 @Component({
@@ -14,7 +14,7 @@ export class Page2 {
   icons: string[];
   items: Array<{ title: string, note: string, icon: string }>;
   annonce: any[] = [];
-
+  id: any
   constructor(public storage: Storage, public modalCtrl: ModalController, public navCtrl: NavController, public navParams: NavParams, private annonceCovoiService: AnnonceCovoiService) {
 
     this.loadAnnounce();
@@ -47,14 +47,14 @@ export class Page2 {
   }
 
   loadAnnounce() {
-    let id = "";
+   this.id = "";
     this.storage.ready().then(() => {
       this.storage.get("token").then((data) => {
         let jwtHelper: JwtHelper = new JwtHelper();
-        id = jwtHelper.decodeToken(data).userId;
+        this.id = jwtHelper.decodeToken(data).userId;
 
-        console.log(id);
-        this.annonceCovoiService.getAnnonceCovoiByIdAuthor(id).subscribe(result => {
+        console.log(this.id);
+        this.annonceCovoiService.getAnnonceCovoiByIdAuthor(this.id).subscribe(result => {
           console.log(this.annonce);
           result.forEach(element => {
             this.annonce.push(element);
@@ -67,6 +67,11 @@ export class Page2 {
 
 
     });
+  }
+
+  reservation(id) {
+    let modal = this.modalCtrl.create(ModalReservation, { idA: id, id: this.id });
+    modal.present();
   }
 
 }

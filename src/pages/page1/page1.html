@@ -84,7 +84,7 @@
         <ion-icon name="chatbubbles"></ion-icon>
         Commenter
       </button>
-            <button *ngIf="id != item.utilisateur.idUtilisateur" ion-button color="danger" (click)="confirmDeleteAccount()">
+            <button *ngIf="id != item.utilisateur.idUtilisateur" ion-button color="danger" (click)="reserver(item.id)">
         <ion-icon name="clipboard"></ion-icon>
         Reserver
       </button>

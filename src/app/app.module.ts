@@ -23,6 +23,8 @@ import { ChatPage } from "../pages/chatPage/chatPage";
 import { CommentService } from "../services/comment.service";
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import { MapComponent } from "../pages/map/map";
+import { PaysService } from "../services/pays.service";
+import { ReservationService } from "../services/reservation.service";
 
 const cloudSettings: CloudSettings = {
   'core': {
@@ -66,7 +68,7 @@ const cloudSettings: CloudSettings = {
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
   Storage,
   UserAuth,
-  CustomValidators,UserService,AnnonceCovoiService,CommentService
+  CustomValidators,UserService,AnnonceCovoiService,CommentService,PaysService,ReservationService
   ]
 })
 export class AppModule {}

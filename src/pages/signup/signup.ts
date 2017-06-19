@@ -1,10 +1,10 @@
 import { Component } from "@angular/core";
-import { NavController, AlertController } from "ionic-angular";
+import { NavController, AlertController, LoadingController } from "ionic-angular";
 import { UserAuth } from "../../services/user-auth";
 import { FormBuilder, FormGroup, Validators, AbstractControl } from "@angular/forms";
 import { CustomValidators } from "../../services/custom-validators";
-import { Md5 } from "ts-md5/dist/md5";
-import { Page1 } from "../page1/page1";
+import { LoginPage } from "../login/login";
+import { UserService } from "../../services/user.service";
 
 
 @Component({
@@ -20,39 +20,49 @@ export class SignupPage {
   username: AbstractControl;
   email: AbstractControl;
   password: AbstractControl;
-
+  profession: AbstractControl;
+  numTelephone: AbstractControl;
   constructor(public navCtrl: NavController, public alertCtrl: AlertController,
-              public userAuthService: UserAuth, public fb: FormBuilder) {
+    public userAuthService: UserAuth, public fb: FormBuilder,public loading: LoadingController,public userService:UserService) {
     this.signupForm = fb.group({
       'firstName': [
         '',
         Validators.compose([Validators.required, Validators.maxLength(20),
-          CustomValidators.noEmptyWhiteSpace])
+        CustomValidators.noEmptyWhiteSpace])
       ],
 
       'lastName': [
         '',
         Validators.compose([Validators.required, Validators.maxLength(20),
-          CustomValidators.noEmptyWhiteSpace])
+        CustomValidators.noEmptyWhiteSpace])
       ],
 
       'username': [
         '',
         Validators.compose([Validators.required, Validators.maxLength(20),
-          CustomValidators.usernameValidator, CustomValidators.noEmptyWhiteSpace])
+        CustomValidators.usernameValidator, CustomValidators.noEmptyWhiteSpace])
       ],
 
       'email': [
         '',
         Validators.compose([Validators.required, CustomValidators.emailValidator,
-          CustomValidators.noEmptyWhiteSpace])
+        CustomValidators.noEmptyWhiteSpace])
       ],
 
       'password': [
         '',
-        Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(16),
-          CustomValidators.passwordValidator, CustomValidators.noEmptyWhiteSpace])
-      ]
+        Validators.compose([Validators.required, Validators.minLength(5), Validators.maxLength(16),
+        CustomValidators.passwordValidator, CustomValidators.noEmptyWhiteSpace])
+      ],
+      'profession': [
+        '',
+        Validators.compose([Validators.required, Validators.minLength(4), Validators.maxLength(16),
+        CustomValidators.noEmptyWhiteSpace])
+      ],
+      'numTelephone':[
+        '',
+        Validators.compose([Validators.required, Validators.maxLength(20)])
+      ],
     });
 
     this.firstName = this.signupForm.controls['firstName'];
@@ -60,51 +70,71 @@ export class SignupPage {
     this.username = this.signupForm.controls['username'];
     this.email = this.signupForm.controls['email'];
     this.password = this.signupForm.controls['password'];
+    this.profession=this.signupForm.controls['profession'];
+    this.numTelephone=this.signupForm.controls['numTelephone'];
   }
 
   signup(form: any) {
     let details: any = {
-      'name': `${ form.firstName.trim() } ${ form.lastName.trim() }`,
-      'username': form.username.trim(),
+      'login': form.username.trim(),
       'email': form.email.trim(),
-      'password': form.password.trim(),
-      'image': 'https://www.gravatar.com/avatar/' + Md5.hashStr(form.email.trim()),
-      'custom': {
-        'firstName': form.firstName,
-        'lastName': form.lastName
-      }
+      'motDePasse': form.password.trim(),
+      'nom': form.firstName.trim(),
+      'prenom': form.lastName.trim(),
+      'profession':form.profession.trim(),
+      'numTelephone':form.numTelephone.trim()
     };
-    this.userAuthService.signup(details).then((data) => {
-      if (data.error) {
-        for (let e of data.error.details) {
-          this.error = CustomValidators.getErrorMessage(e, data.error);
+   let loader = this.loading.create({
+      content: 'Chargement ...',
+    });
+    loader.present().then(() => {
+      console.log("nuuuuuuuuuum "+details.numTelephone);
+      this.userService.addUser(details).subscribe((data) => {
+
+        loader.dismiss();
+      this.ConfirmAlert();
+      },
+        (message) => {
+          //   this.error = CustomValidators.getErrorMessage(error, error.data);
+          let err = message.json();
+          this.error = err.message;
+          loader.dismiss();
           this.showAlert();
         }
-      } else {
-        this.signin(details);
-      }
+      );
+
     });
+
   }
 
-  signin(details: any) {
-    this.userAuthService.signin(details).then((data) => {
-      if (data.error) {
-        this.error = CustomValidators.getErrorMessage(data.error.message, data.error);
-        this.showAlert();
-      } else {
-        this.navCtrl.setRoot(Page1);
-      }
-    })
-  }
+ 
 
   showAlert() {
     let alert = this.alertCtrl.create({
       title: 'Error',
-      subTitle: 'Failed to Register',
+      subTitle: 'Échec de l`inscription',
       message: this.error,
       buttons: ['OK']
     });
 
     alert.present();
+  }
+    ConfirmAlert() {
+
+    let alert = this.alertCtrl.create({
+      title: 'Confirmation',
+      message: 'Consulter votre mail pour confirmer l`inscription',
+      buttons: [
+        {
+          text: 'ok',
+          handler: () => {
+          this.navCtrl.setRoot(LoginPage);
+
+          }
+        }
+      ]
+    });
+    alert.present();
+
   }
 }

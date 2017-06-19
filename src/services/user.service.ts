@@ -55,39 +55,26 @@ export class UserService {
         return res.url;
     }
 
-    addUser(firstname: String, lastname: String, username: String, password: String) {
+    addUser(form: any) {
 
-        let headers = new Headers();
+           let a: any
+        this.storage.ready().then(() => {
+            this.storage.get("token").then((data) => {
+                if (data !== null) {
+                    //  console.log(localStorage.getItem('currentToken'));
 
-        console.log(headers);
-
-        let body = { "nom": firstname, "prenom": lastname, "login": username, "motDePasse": password };
-
-        let options = new RequestOptions({ headers: headers });
-        return this.http.post("http://localhost:8080" + '/utilisateurs', body, options)
-            .map((response: Response) => {
-
-                console.log("bk 1")
-                let x = JSON.parse(JSON.stringify(response));
-                console.log("bk 2");
-
-                let token = x._body;
-                console.log("bk 3");
-
-
-                if (token) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    localStorage.setItem('currentUser', JSON.stringify(token));
-                    //this.router.navigate(['/dashboard/statistique']);
-                    //    console.log (localStorage.getItem('currentUser'));
-                    //console.log (user.user.username);
-
-
+                    let headers = new Headers({ 'Authorization': 'Bearer ' + JSON.parse(data) });
+                    a = new RequestOptions({ headers: headers });
                 }
             });
+        });
 
-
+        return this.http.post("http://localhost:8080" + '/inscriptionUtilisateur', form, a)
+            .map((response: Response) => response.json());
     }
+
+
+
 
     getAvis(_id: string) {
         let a: any

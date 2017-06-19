@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { AlertController, Platform, NavController, ModalController, NavParams, ViewController, ToastController } from 'ionic-angular';
+import { AlertController, Platform, NavController, ModalController, NavParams, ViewController, ToastController, LoadingController } from 'ionic-angular';
 import { AnnonceCovoiService } from "../../services/annonceCovoi.service";
 import { AnnonceCovoi } from "../../models/annonceCovoi";
 import { ProfilePage } from "../profile/profile";
@@ -7,7 +7,10 @@ import { Storage } from '@ionic/storage';
 import { JwtHelper } from "angular2-jwt/angular2-jwt";
 import { UserService } from "../../services/user.service";
 import { CommentService } from "../../services/comment.service";
-import { MapComponent } from "../map/map";
+import { PaysService } from "../../services/pays.service";
+import { Pays } from "../../models/Pays";
+import { City } from "../../models/city";
+import { ReservationService } from "../../services/reservation.service";
 declare var google;
 
 @Component({
@@ -22,7 +25,8 @@ export class Page1 {
   item: AnnonceCovoi[];
   compt = 1
   id: any;
-  constructor(private toastCtrl: ToastController, private userService: UserService, public storage: Storage, public modalCtrl: ModalController, public navCtrl: NavController, platform: Platform, private alertCtrl: AlertController, private annonceCovoiService: AnnonceCovoiService) {
+
+  constructor(public reservationService: ReservationService, public loading: LoadingController, private toastCtrl: ToastController, private userService: UserService, public storage: Storage, public modalCtrl: ModalController, public navCtrl: NavController, platform: Platform, private alertCtrl: AlertController, private annonceCovoiService: AnnonceCovoiService) {
 
     this.loadAnnonce();
     this.isAndroid = platform.is('android');
@@ -55,10 +59,8 @@ export class Page1 {
   }
   ajoutCovoi() {
 
-    let modal = this.modalCtrl.create(ModalAjoutCovoi);
+    let modal = this.modalCtrl.create(ModalAjoutCovoi, { id: this.id });
     modal.present();
-
-
   }
   searchCovoi() {
 
@@ -178,23 +180,62 @@ export class Page1 {
 
   }
 
-  reserver(item) {
-    alert("Viewing players of " + item.title);
+  reserver(id) {
+
+    console.log(id)
+    let alert = this.alertCtrl.create({
+      title: 'vous êtes sur ?',
+      message: 'Voulez vous vraiment réserver ?  ',
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Confirmer',
+          handler: () => {
+            this.reservationService.reserver(id, this.id).subscribe(
+              data => {
+                if (data !== null) {
+                  this.presentToast("Reservation avec success ");
+                  console.log("jjjjj" + data)
+
+
+                } else {
+                  this.presentToast("Vous avez déjà réservé");
+
+                }
+              });
+
+
+          }
+        }
+      ]
+    });
+    alert.present();
+
   }
   doInfinite(infiniteScroll) {
     console.log('Begin async operation');
-    let t = this.compt++;
+    this.compt++;
     console.log("next page:" + this.compt)
     setTimeout(() => {
 
       //  this.items.push( this.items.length );
-      this.annonceCovoiService.getAnnoncesCovoiByPage(t + "").subscribe(result => {
-        result.content.forEach(element => {
-          if (element !== "")
+      this.annonceCovoiService.getAnnoncesCovoiByPage(this.compt + "").subscribe(result => {
+        console.log('result ' + JSON.stringify(result.content));
+        if (result.content != "") {
+          console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+          result.content.forEach(element => {
             this.items.push(element);
-        });
+          });
 
-
+        } else {
+          this.compt--;
+          console.log("compt   " + this.compt);
+        }
 
         console.log(this.items);
       })
@@ -254,11 +295,7 @@ export class Page1 {
         <p>{{annonce.utilisateur.numTelephone}}</p>
       </ion-item>
       
-      <ion-item>
-   <button *ngIf="id == annonce.utilisateur.idUtilisateur" ion-button color="dark" (click)="reservation()" block>
-        <ion-icon name="bookmark"> Reservation</ion-icon>
-      </button>
-      </ion-item>
+  
       
          <ion-item-group>
         <ion-item-divider color="light">Information</ion-item-divider>
@@ -365,12 +402,6 @@ export class ModalContentPage {
   dismiss() {
     this.viewCtrl.dismiss();
   }
-  reservation() {
-    this.navCtrl.push(MapComponent)
-    //   let modal = this.modalCtrl.create(ModalReservation, { id: this.id });
-    //    modal.present();
-
-  }
 
 }
 
@@ -379,7 +410,7 @@ export class ModalContentPage {
 <ion-header>
   <ion-toolbar color="customGreen">
     <ion-title>
-      Details
+      Reservation
     </ion-title>
     <ion-buttons start>
       <button ion-button (click)="dismiss()">
@@ -389,10 +420,39 @@ export class ModalContentPage {
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
 
-<p>pas de reservation</p>
+
+<p><strong>pas de reservation</strong></p>
+
+<ion-content class="list-avatar-page">
+<ion-list>
+  <ion-item-sliding *ngFor="let res of reservations">
+<ion-item color="#1ab394">
+      <ion-avatar item-start>
+     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmcnjEKIYp8_oIvSdDatu-A5XVjc_8ZCfBF5TdY8mJ11ZoaYjtag"
+     (click)="getProfile()"> 
+      </ion-avatar>
+      <h2>{{res.utilisateurReservation.nom}}</h2>
+      <p>{{res.utilisateurReservation.numTelephone}}</p>
+<p><span style="color: red" *ngIf="res.etat==null">En Attente</span><span style="color: green"  *ngIf="res.etat==true">Accepté</span> <span style="color: green"  *ngIf="res.etat==false">Refusé</span></p> 
+    </ion-item>
+      <ion-item-options side="right" *ngIf="res.etat==null">
+        <button ion-button color="customGreen2" (click)="accepterReservation(res.idReservation)">
+      <ion-icon name="done-all"></ion-icon> 
+      </button>
+      <button ion-button color="danger" (click)="refuserReservation(res.idReservation)">
+      <ion-icon name="trash"></ion-icon> 
+      </button>
+     
+    </ion-item-options>
+   
+</ion-item-sliding>
+    </ion-list>
+ 
+
 </ion-content>
+
+
 
 
 `
@@ -403,7 +463,9 @@ export class ModalContentPage {
 
 export class ModalReservation {
   id: any;
-  constructor(
+  idA: any;
+  public reservations: any[];
+  constructor(private toastCtrl: ToastController,public reservationService: ReservationService,public navCtrl: NavController,
     public platform: Platform,
     public params: NavParams,
     public viewCtrl: ViewController, public annonceCovoiService: AnnonceCovoiService
@@ -413,8 +475,68 @@ export class ModalReservation {
 
 
     this.id = this.params.get('id');
+    this.idA = this.params.get('idA');
     console.log("id    " + this.id);
+    console.log("idA    " + this.idA);
+    this.getReservationsByAnnonceCovoi(this.idA);
   }
+
+
+  getReservationsByAnnonceCovoi(idA) {
+    this.reservationService.getReservationsByAnnonceCovoi(idA)
+      .subscribe(
+      reservations => {
+        this.reservations = reservations, console.log(this.reservations)
+
+      });
+  }
+
+ presentToast(msg: string) {
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'top'
+    });
+
+    toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    toast.present();
+  } 
+ getProfile(id) {
+
+    this.navCtrl.push(ProfilePage, { data: id });
+  }
+
+
+
+accepterReservation(id){
+    //let etat= true;
+    console.log("idd   "+id);
+    this.reservationService.accepterReservation(id, true)
+    .subscribe(data => {
+            console.log("dddddddddd")
+            this.presentToast("Accepté");
+            this.getReservationsByAnnonceCovoi(this.idA);
+         //   this.accepted=true;
+    });
+
+}
+refuserReservation(id){
+   // let etat= false;
+    this.reservationService.refuserReservation(id, false)
+        .subscribe(data=>{
+          this.presentToast("Refusé");
+            console.log("refused");
+            this.getReservationsByAnnonceCovoi(this.idA);
+        });
+
+}
+
+
+
+
 
   dismiss() {
     this.viewCtrl.dismiss();
@@ -589,7 +711,7 @@ export class ModalComment {
 </ion-header>
 <ion-content>
 
-
+ <form name="form" (ngSubmit)="ajouter()" #f="ngForm">
 <ion-item-group>
         <ion-item-divider color="light"><ion-icon name="pin" color="secondary" item-left large></ion-icon>
           <span item-left ><strong>Depart</strong></span></ion-item-divider>
@@ -597,13 +719,8 @@ export class ModalComment {
          <ion-label>
           <span item-left color="primary">Pays</span>
          </ion-label>
-    <ion-select [(ngModel)]="gaming">
-      <ion-option value="nes">NES</ion-option>
-      <ion-option value="n64">Nintendo64</ion-option>
-      <ion-option value="ps">PlayStation</ion-option>
-      <ion-option value="genesis">Sega Genesis</ion-option>
-      <ion-option value="saturn">Sega Saturn</ion-option>
-      <ion-option value="snes">SNES</ion-option>
+    <ion-select [(ngModel)]="model.paysDepart"  (ionChange)="onSelect1($event)"  name="paysDepart" >
+  <ion-option *ngFor="let pay of pays" value= {{pay.idPays}}>{{pay.nom}}</ion-option>
     </ion-select>
         </ion-item>
      <ion-item>
@@ -611,13 +728,9 @@ export class ModalComment {
          
           <span item-left color="primary">Ville</span>
          </ion-label>
-    <ion-select [(ngModel)]="a">
-      <ion-option value="nes">NES</ion-option>
-      <ion-option value="n64">Nintendo64</ion-option>
-      <ion-option value="ps">PlayStation</ion-option>
-      <ion-option value="genesis">Sega Genesis</ion-option>
-      <ion-option value="saturn">Sega Saturn</ion-option>
-      <ion-option value="snes">SNES</ion-option>
+    <ion-select [(ngModel)]="model.villeDepart" name="villeDepart"   (ionChange)="onInput($event)">
+      <option value="0">Select Ville Depart</option>
+       <ion-option *ngFor="let city of cities " value= {{city.nom}}>{{city.nom}}</ion-option>
     </ion-select>
         </ion-item>
       </ion-item-group>
@@ -630,13 +743,8 @@ export class ModalComment {
          <ion-label>
           <span item-left color="primary">Pays</span>
          </ion-label>
-    <ion-select [(ngModel)]="gaming">
-      <ion-option value="nes">NES</ion-option>
-      <ion-option value="n64">Nintendo64</ion-option>
-      <ion-option value="ps">PlayStation</ion-option>
-      <ion-option value="genesis">Sega Genesis</ion-option>
-      <ion-option value="saturn">Sega Saturn</ion-option>
-      <ion-option value="snes">SNES</ion-option>
+    <ion-select [(ngModel)]="model.paysArrivee" (ionChange)="onSelect2($event)" name="paysArrivee"  >
+     <ion-option *ngFor="let pay of pays" value= {{pay.idPays}}>{{pay.nom}}</ion-option>
     </ion-select>
         </ion-item>
      <ion-item>
@@ -644,59 +752,53 @@ export class ModalComment {
          
           <span item-left color="primary">Ville</span>
          </ion-label>
-    <ion-select [(ngModel)]="a">
-      <ion-option value="nes">NES</ion-option>
-      <ion-option value="n64">Nintendo64</ion-option>
-      <ion-option value="ps">PlayStation</ion-option>
-      <ion-option value="genesis">Sega Genesis</ion-option>
-      <ion-option value="saturn">Sega Saturn</ion-option>
-      <ion-option value="snes">SNES</ion-option>
+    <ion-select [(ngModel)]="model.villeArrivee" name="villeArrivee"  (ionChange)="onInput2($event)">
+     <ion-option *ngFor="let city of cities2 " value= {{city.nom}}>{{city.nom}}</ion-option>
     </ion-select>
         </ion-item>
-      </ion-item-group>
-
+      </ion-item-group> 
 
       <ion-item-group>
-        <ion-item-divider color="light"><ion-icon name="calendar" color="primary" item-left large></ion-icon>
+        <ion-item-divider color="light"><ion-icon name="calendar" item-left large></ion-icon>
           <span item-left ><strong>Date</strong></span></ion-item-divider>
 
-      <ion-item>
+      <ion-item>%
          <ion-label>
           <span item-left color="primary">Date</span>
          </ion-label>
-            <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="event.month"></ion-datetime>     
+            <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="model.dateDepart" name="dateDepart"  required></ion-datetime>     
        </ion-item>
     </ion-item-group>
 
       <ion-item-group>
-        <ion-item-divider color="light"><ion-icon name="time" color="primary" item-left large></ion-icon>
+        <ion-item-divider color="light"><ion-icon name="time" item-left large></ion-icon>
           <span item-left ><strong>Heure</strong></span></ion-item-divider>
 
         <ion-item>
          <ion-label>
           <span item-left color="primary">Heure</span>
          </ion-label>
-            <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="event.time"></ion-datetime>    
+            <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="model.heureDepart" name="heureDepart"  ></ion-datetime>    
        </ion-item>
         </ion-item-group>
 
 
          <ion-item-group>
-        <ion-item-divider color="light"><ion-icon name="cash" color="primary" item-left large></ion-icon>
+        <ion-item-divider color="light"><ion-icon name="cash" item-left large></ion-icon>
           <span item-left ><strong>Cotisation</strong></span></ion-item-divider>
 
       <ion-item>
          <ion-label>
           <span item-left color="primary">Cotisation</span>
          </ion-label>
-           <ion-select [(ngModel)]="cotisation">
+           <ion-select [(ngModel)]="model.cotisation"  name="cotisation"  required >
       <ion-option value="1">1</ion-option>
       <ion-option value="2">2</ion-option>
       <ion-option value="3">3</ion-option>
       <ion-option value="4">4</ion-option>
      
     </ion-select>    
-    <ion-select [(ngModel)]="currency">
+    <ion-select [(ngModel)]="currency"  name="currency"  >
       <ion-option value="$">$</ion-option>
       <ion-option value="DT">DT</ion-option>
       <ion-option value="£">£</ion-option>
@@ -707,14 +809,14 @@ export class ModalComment {
 </ion-item-group>
 
  <ion-item-group>
-        <ion-item-divider color="light"><ion-icon name="people" color="primary" item-left large></ion-icon>
+        <ion-item-divider color="light"><ion-icon name="people" item-left large></ion-icon>
           <span item-left ><strong>Nb places</strong></span></ion-item-divider>
 
         <ion-item>
          <ion-label>
           <span item-left color="primary">Places</span>
          </ion-label>
-           <ion-select [(ngModel)]="place">
+           <ion-select [(ngModel)]="model.nombrePlaces"  name="nombrePlaces"  required >
       <ion-option value="1">1</ion-option>
       <ion-option value="2">2</ion-option>
       <ion-option value="3">3</ion-option>
@@ -731,7 +833,7 @@ export class ModalComment {
     <br>
         <button ion-button round color="customGreen" class="center">Ajouter</button>
         <br>
-        
+        </form>
   </ion-content>
 
 `
@@ -741,20 +843,143 @@ export class ModalComment {
 })
 
 export class ModalAjoutCovoi {
-  id: any;
-   public event = {
+  paysDepart: Pays;
+  paysArrivee: Pays;
+
+  selectedPays: any = {}
+  pays: Pays[];
+  cities: City[];
+  cities2: City[];
+  onePays: Pays;
+  onePays2: Pays;
+
+  model: any = {
+    heureDepart: '07:43',
+    dateDepart: '1990-02-19'
+  };
+
+  id: string;
+
+
+
+  val1: number;
+
+  val2: number;
+
+  val3: number;
+
+  val4: number = 100;
+  public event = {
     month: '1990-02-19',
     time: '07:43',
-    
+
   };
-  constructor(
+  constructor(public paysService: PaysService,
     public platform: Platform,
     public params: NavParams,
-    public viewCtrl: ViewController, public annonceCovoiService: AnnonceCovoiService
+    public viewCtrl: ViewController, public annonceCovoiService: AnnonceCovoiService, public loading: LoadingController
   ) {
 
+    this.id = this.params.get("id");
+  }
+  ionViewWillEnter() {
+    let loader = this.loading.create({
+      content: 'chargement ...',
+    });
+    loader.present().then(() => {
+      console.log("jjje ");
+      this.paysService.getAll().subscribe(pays => {
+        console.log("heeeeeeeeeeeee" + pays);
+        this.pays = pays;
+        loader.dismiss();
+      });
+
+
+    });
   }
 
+
+  onSelect1(idPays1) {
+
+    console.log('idPaysDepart' + idPays1)
+    console.log('idPaysDepartModel' + this.model.paysDepart);
+    console.log('idVilleDepart' + this.model.villeDepart);
+    if (idPays1 != undefined) {
+      this.paysService.getById(idPays1).subscribe(onePays => {
+        this.onePays = onePays, this.cities = this.onePays.cities, this.paysDepart = onePays.nom
+        console.log("fff " + JSON.stringify(this.cities));
+      });
+    }
+    else console.log("undefined id")
+  }
+
+
+  onSelect2(idPays2) {
+    console.log('idPaysArrivee' + idPays2)
+    console.log('idPaysArriveeModel' + this.model.paysDepart);
+    console.log('idVilleArrivee' + this.model.villeArrivee);
+    if (idPays2 != undefined) {
+      this.paysService.getById(idPays2).subscribe(onePays2 => {
+        console.log(onePays2.cities);
+        this.onePays2 = onePays2, this.cities2 = this.onePays2.cities, this.paysArrivee = onePays2.nom
+      });
+      console.log(JSON.stringify(this.cities));
+    }
+    else console.log("undefined id");
+  }
+
+  onInput(selected) {
+
+    console.log('selected: ' + selected);
+  }
+  onInput2(selected) {
+
+    console.log('selected: ' + selected);
+  }
+
+
+
+
+
+
+
+
+
+
+  ajouter() {
+
+    this.model.paysDepart = this.paysDepart;
+    this.model.paysArrivee = this.paysArrivee;
+    console.log(this.model.paysDepart);
+    console.log(this.model.villeDepart);
+    console.log(this.model.paysArrivee);
+    console.log(this.model.villeArrivee);
+    console.log(this.model.heureDepart);
+    console.log(this.model.dateDepart);
+    console.log(this.model.nombrePlaces);
+    console.log(this.model.cotisation);
+
+    let loader = this.loading.create({
+      content: 'chargement ...',
+    });
+    loader.present().then(() => {
+
+      this.annonceCovoiService.ajouterAnnonceCovoi(this.model.heureDepart, this.model.dateDepart, this.model.paysDepart,
+        this.model.villeDepart, this.model.paysArrivee, this.model.villeArrivee, this.model.nombrePlaces,
+        this.model.cotisation, this.id)
+        .subscribe(
+        data => {
+          this.dismiss();
+          loader.dismiss();
+        });
+
+
+    });
+
+
+
+
+  }
   dismiss() {
     this.viewCtrl.dismiss();
   }

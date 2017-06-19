@@ -38,7 +38,7 @@ export class LoginPage {
 
       'password': [
         '',
-        Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(16),
+        Validators.compose([Validators.required, Validators.minLength(5), Validators.maxLength(16),
         CustomValidators.passwordValidator, CustomValidators.noEmptyWhiteSpace])
       ]
     });
@@ -68,28 +68,28 @@ export class LoginPage {
 
           });
         });
-
+        loader.dismiss();
         this.navCtrl.setRoot(Page1);
       },
         (message) => {
           //   this.error = CustomValidators.getErrorMessage(error, error.data);
           let err = message.json();
           this.error = err.message;
-
+          loader.dismiss();
           this.showAlert();
         }
       );
 
     });
 
-    loader.dismiss();
+
 
   }
 
   showAlert() {
     let alert = this.alertCtrl.create({
       title: 'Erreur',
-      subTitle: 'Échec de la connexion',
+      subTitle: 'Échec',
       message: this.error,
       buttons: ['OK']
     });

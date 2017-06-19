@@ -39,6 +39,30 @@
                   <ion-input type="email" id="email" formControlName="email"></ion-input>
                 </ion-item>
                 <error-messages [control]="email"></error-messages>
+
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col width-50 no-padding>
+                <ion-item>
+                  <ion-label for="profession" floating>Profession</ion-label>
+                  <ion-input type="text" id="profession" formControlName="profession"></ion-input>
+                </ion-item>
+                <error-messages [control]="profession"></error-messages>
+              </ion-col>
+              <ion-col width-50 no-padding>
+                <ion-item>
+                  <ion-label for="numTelephone" floating>Numero Tel</ion-label>
+                  <ion-input type="tel" id="numTelephone" formControlName="numTelephone"></ion-input>
+                </ion-item>
+                <error-messages [control]="numTelephone"></error-messages>
+              </ion-col>
+            </ion-row>
+
+
+            <ion-row>
+              <ion-col no-padding>
                 <ion-item>
                   <ion-label for="password" floating>Mot de passe</ion-label>
                   <ion-input type="password" id="password" formControlName="password"></ion-input>

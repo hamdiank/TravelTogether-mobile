@@ -7,18 +7,18 @@ export class CustomValidators {
   static getErrorMessage(errorName: string, error?: any): string {
     let config = {
       'required': 'Required',
-      'minlength': `Minimum length ${error.requiredLength}`,
-      'maxlength': `Maximum length ${error.requiredLength}`,
-      'noEmptyWhiteSpace': 'Contains empty white space',
-      'invalidEmailAddress': 'Invalid email address',
-      'invalidPassword': 'No spaces, please.', // Appropriate message for controlling regex
-      'invalidUsername': 'No spaces, numbers, or special characters, please.', // Appropriate message for controlling regex
-      'mismatchedPasswords': 'Passwords do not match.',
-      'required_email': 'Your email address is required for registration', // Customize Ionic Cloud default message
-      'required_password': 'A password is required for registration', // Customize Ionic Cloud default message
+      'minlength': `${error.requiredLength} char min`,
+      'maxlength': `${error.requiredLength} char max`,
+      'noEmptyWhiteSpace': 'Contient un espace blanc vide',
+      'invalidEmailAddress': 'Adresse mail invalide',
+      'invalidPassword': 'Pas d`espace, s`il vous plait.', // Appropriate message for controlling regex
+      'invalidUsername': 'Pas d`espaces, de chiffres ou de caractères spéciaux, s`il vous plaît.', // Appropriate message for controlling regex
+      'mismatchedPasswords': 'Les mots de passe ne correspondent pas.',
+      'required_email': 'Votre adresse mail est requise pour l`inscription', // Customize Ionic Cloud default message
+      'required_password': 'Votre mot de passe est requise pour l`inscription', // Customize Ionic Cloud default message
       'conflict_email': 'The email address you entered already belongs to another account', // Customize Ionic Cloud default message
       'conflict_username': 'The username you entered already belongs to another account', // Customize Ionic Cloud default message
-      'invalid_email': 'Please enter a valid email address', // Customize Ionic Cloud default message,
+      'invalid_email': 'S`il vous plaît, mettez une adresse email valide', // Customize Ionic Cloud default message,
       'Unsuccessful HTTP response': 'There is no account with that email/password combination.' // Customize Ionic Cloud default message
     };
 
