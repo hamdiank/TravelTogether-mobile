@@ -73,6 +73,21 @@ export class UserService {
             .map((response: Response) => response.json());
     }
 
+resetMp(mail:string ){
+          let a: any
+        this.storage.ready().then(() => {
+            this.storage.get("token").then((data) => {
+                if (data !== null) {
+                    //  console.log(localStorage.getItem('currentToken'));
+
+                    let headers = new Headers({ 'Authorization': 'Bearer ' + JSON.parse(data) });
+                    a = new RequestOptions({ headers: headers });
+                }
+            });
+        });
+      return this.http.post("http://localhost:8080" + '/mail/send/'+mail+".", a).map((response: Response) => response.json());
+
+}
 
 
 

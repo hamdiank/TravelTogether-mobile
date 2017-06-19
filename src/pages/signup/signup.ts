@@ -88,7 +88,6 @@ export class SignupPage {
       content: 'Chargement ...',
     });
     loader.present().then(() => {
-      console.log("nuuuuuuuuuum "+details.numTelephone);
       this.userService.addUser(details).subscribe((data) => {
 
         loader.dismiss();

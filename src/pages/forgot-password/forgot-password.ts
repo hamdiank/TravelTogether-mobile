@@ -1,9 +1,10 @@
 import { Component } from "@angular/core";
-import { AlertController, NavController } from "ionic-angular";
+import { AlertController, NavController, LoadingController } from "ionic-angular";
 import { FormBuilder, FormGroup, Validators, AbstractControl } from "@angular/forms";
 import { CustomValidators } from "../../services/custom-validators";
 import { UserAuth } from "../../services/user-auth";
-import { ConfirmPasswordResetPage } from "../confirm-password-reset/confirm-password-reset";
+import { UserService } from "../../services/user.service";
+import { LoginPage } from "../login/login";
 
 @Component({
   selector: 'forgot-password-page',
@@ -14,8 +15,8 @@ export class ForgotPasswordPage {
   email: AbstractControl;
   error: string;
 
-  constructor(public navCtrl: NavController, public userAuthService: UserAuth,
-              public fb: FormBuilder, public alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public userAuthService: UserAuth,public userService:UserService,
+              public fb: FormBuilder,public loading: LoadingController, public alertCtrl: AlertController) {
     this.forgotPasswordForm = fb.group({
       'email': [
         '',
@@ -28,15 +29,23 @@ export class ForgotPasswordPage {
   }
 
   getResetCode(form: any): void {
-    this.userAuthService.requestPasswordReset(form.email).then((data) => {
-      if (data.error) {
-        this.error = CustomValidators.getErrorMessage(data.error.message, data.error);
-        this.showAlert();
-
-      } else {
-        this.navCtrl.setRoot(ConfirmPasswordResetPage, {'email': form.email});
-      }
+    let loader = this.loading.create({
+      content: 'connexion ...',
     });
+      loader.present().then(() => {
+    this.userService.resetMp(form.email).subscribe((data)=> {
+     loader.dismiss();
+     this.ConfirmAlert();
+      },
+        (message) => {
+          //   this.error = CustomValidators.getErrorMessage(error, error.data);
+          let err = message.json();
+          this.error = err.message;
+        loader.dismiss();
+        this.showAlert();
+        }
+    );
+        }  );
   }
 
   showAlert(): void {
@@ -48,5 +57,23 @@ export class ForgotPasswordPage {
     });
 
     alert.present();
+  }
+      ConfirmAlert() {
+
+    let alert = this.alertCtrl.create({
+      title: 'mot de passe Réinitialisé ',
+      message: 'Consulter votre mail ',
+      buttons: [
+        {
+          text: 'ok',
+          handler: () => {
+          this.navCtrl.setRoot(LoginPage);
+
+          }
+        }
+      ]
+    });
+    alert.present();
+
   }
 }
